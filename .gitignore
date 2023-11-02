@@ -1,0 +1,11 @@
+/pcap/
+/report/
+/video/
+
+/source/client/build/
+/source/client/cmake-build-debug/
+
+/source/server/build/
+/source/server/cmake-build-debug/
+
+
