@@ -33,6 +33,17 @@ set_target_properties(A3 PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR})
 
+get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
+
+#Set the library suffic based on whether it's 64-bit or not
+if ("${LIB64}" STREQUAL "TRUE")
+    set(LIBSUFFIX 64)
+else ()
+    set(LIBSUFFIX "")
+endif ()
+
+target_link_directories(A3 PRIVATE /usr/local/lib${LIBSUFFIX})
+
 find_library(LIBDC_ERROR dc_error REQUIRED)
 find_library(LIBDC_ENV dc_env REQUIRED)
 find_library(LIBDC_C dc_c REQUIRED)

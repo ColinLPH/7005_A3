@@ -280,6 +280,7 @@ int send_all(const struct dc_env *env, struct dc_error *err, void *arg)
         write(opts->socket_fd, node_to_send->file->file_name, node_to_send->file->file_name_size);
         write(opts->socket_fd, &node_to_send->file->file_size, sizeof(off_t));
         send_file_content(node_to_send->file->file_fd, opts->socket_fd, node_to_send->file->file_size);
+        printf("Wrote file_fd=%d to server\n", node_to_send->file->file_fd);
         node_to_send = node_to_send->next;
     }
 

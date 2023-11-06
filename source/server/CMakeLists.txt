@@ -10,8 +10,8 @@ set(CMAKE_C_STANDARD 17)
 
 set(SANITIZE TRUE)
 
-set(SOURCE_DIR src)
-set(INCLUDE_DIR include)
+set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
+set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 
 set(SOURCE_LIST ${SOURCE_DIR}/main.c
                 ${SOURCE_DIR}/server.c
