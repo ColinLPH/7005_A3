@@ -99,8 +99,8 @@ int run_server(const struct dc_env *env, struct dc_error *err, void *arg)
 
         if(activity < 0)
         {
-            perror("Select error");
-            return -1;
+            opts->msg = strdup("Select error\n");
+            return FATALERROR;
         }
 
         // Handle new client connections
@@ -108,8 +108,8 @@ int run_server(const struct dc_env *env, struct dc_error *err, void *arg)
         {
             if((new_socket = accept(opts->bind_fd, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) == -1)
             {
-                perror("Accept error");
-                return -1;
+                opts->msg = strdup("Accept error\n");
+                return FATALERROR;
             }
 
             printf("New connection established\n");
