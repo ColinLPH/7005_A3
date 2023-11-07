@@ -352,6 +352,8 @@ int clean_up(const struct dc_env *env, struct dc_error *err, void *arg)
         free(opts->msg);
     }
 
+    close(opts->socket_fd);
+
     return DC_FSM_EXIT;
 }
 

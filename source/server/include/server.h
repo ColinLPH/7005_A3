@@ -31,10 +31,7 @@ enum server_fsm_state{
     SOCKET,
     BIND,
     LISTEN,
-    ACCEPT,
-    POLL,
-    HANDLEDATAIN,
-    SIGFIN,
+    RUN,
     FATALERROR,
     CLEANUP
 };
@@ -47,6 +44,35 @@ struct server_opts {
     char *host_ip;
     in_port_t host_port;
     char dir_path[MAX_DIR_NAME_LEN];
+    int bind_fd;
 };
+
+struct file_info {
+    int filefd;
+    uint8_t file_name_size;
+    char *file_name;
+    off_t file_size;
+};
+
+int parse_args(const struct dc_env *env, struct dc_error *err, void *arg);
+int get_ip_family(const char *ip_addr);
+void sanitize_path(char *path);
+int is_valid_char(char c);
+int parse_in_port_t(struct server_opts *opts);
+
+int do_mkdir(const struct dc_env *env, struct dc_error *err, void *arg);
+int do_socket(const struct dc_env *env, struct dc_error *err, void *arg);
+int do_bind(const struct dc_env *env, struct dc_error *err, void *arg);
+int do_listen(const struct dc_env *env, struct dc_error *err, void *arg);
+int run_server(const struct dc_env *env, struct dc_error *err, void *arg);
+int socket_close(int fd);
+void handle_data_in(int client_fd, struct server_opts *opts, fd_set *readfds, int *client_sockets, size_t i);
+int create_file(struct server_opts *opts, struct file_info *file);
+char *generate_file_name(char *dir_path, char *file_name);
+void copy_paste(int src_fd, int dest_fd, int64_t count);
+
+int clean_up(const struct dc_env *env, struct dc_error *err, void *arg);
+int print_error(const struct dc_env *env, struct dc_error *err, void *arg);
+
 
 #endif
