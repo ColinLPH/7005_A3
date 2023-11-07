@@ -3,7 +3,6 @@
 int volatile exit_flag = false;
 
 void sigHandler(int signal) {
-    printf("Exiting Run\n");
     exit_flag = true;
 }
 
@@ -18,6 +17,7 @@ int main(int argc, char *argv[])
     env = dc_env_create(err, false, NULL);
     opts.argc = argc;
     opts.argv = argv;
+    opts.msg = NULL;
 
     struct dc_fsm_info *fsm_info;
     struct dc_fsm_transition transitions[] = {
@@ -99,8 +99,15 @@ int run_server(const struct dc_env *env, struct dc_error *err, void *arg)
 
         if(activity < 0)
         {
-            opts->msg = strdup("Select error\n");
-            return FATALERROR;
+            if(exit_flag)
+            {
+                opts->msg = strdup("\nServer closing... cleaning up\n");
+            }
+            else
+            {
+                opts->msg = strdup("\nSelect error\n");
+            }
+            break;
         }
 
         // Handle new client connections
@@ -109,7 +116,7 @@ int run_server(const struct dc_env *env, struct dc_error *err, void *arg)
             if((new_socket = accept(opts->bind_fd, (struct sockaddr *) &address, (socklen_t * ) & addrlen)) == -1)
             {
                 opts->msg = strdup("Accept error\n");
-                return FATALERROR;
+                break;
             }
 
             printf("New connection established\n");
@@ -140,8 +147,8 @@ int run_server(const struct dc_env *env, struct dc_error *err, void *arg)
         sd = client_sockets[i];
         if(sd > 0 && socket_close(sd) == -1)
         {
+            free(opts->msg);
             opts->msg = strdup("Error closing client sockets\n");
-            return FATALERROR;
 
         }
     }
@@ -150,11 +157,29 @@ int run_server(const struct dc_env *env, struct dc_error *err, void *arg)
     free(client_sockets);
     if(socket_close(opts->bind_fd) == -1)
     {
+        free(opts->msg);
         opts->msg = strdup("Error closing bind socket\n");
+    }
+
+    if(opts->msg)
+    {
         return FATALERROR;
     }
 
     printf("Server finished running... cleaning up\n");
+
+    return CLEANUP;
+}
+
+int print_error(const struct dc_env *env, struct dc_error *err, void *arg)
+{
+    struct server_opts *opts = (struct server_opts *)arg;
+
+    printf("%s\n", opts->msg);
+    if(!exit_flag)
+    {
+        printf("Usage: <ip4 or ip6 addr to bind to> <port> <dir to store in>\n");
+    }
 
     return CLEANUP;
 }

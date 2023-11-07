@@ -356,16 +356,6 @@ int socket_close(int fd)
     return close(fd);
 }
 
-int print_error(const struct dc_env *env, struct dc_error *err, void *arg)
-{
-    struct server_opts *opts = (struct server_opts *)arg;
-
-    printf("%s\n", opts->msg);
-    printf("Usage: <ip4 or ip6 addr to bind to> <port> <dir to store in>\n");
-
-    return CLEANUP;
-}
-
 int clean_up(const struct dc_env *env, struct dc_error *err, void *arg)
 {
     struct server_opts *opts = (struct server_opts *)arg;
